@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="fr">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    <title>Cours SQL - Bibliothèque Part.2</title>
+</head>
+
+<body>
+    <main class="container">
+        <h1>Les jointures en MySQL</h1>
+
+        <!-- section1 -->
+        <section class="row">
+            <div class="col-12">
+                <h2 class="text-center">1- Jointures</h2>
+                <h3 class="text-center">a) Définition</h3>
+                <p>Les jointures permettent, comme les requêtes imbriquées, d'effectuer des requêtes sur plusieurs
+                    tables. Pour cela, il faut un champ commn aux tables sur lesquelles on vuet chercher une
+                    information.L'aventage des jointures est que l'on peut obtenir un résultat final des colonnes ou
+                    champsissus de plusieurs tables différentes. </p>
+                <h3 class="text-center">b) Récapitulatif</h3>
+                <ul>
+                    <li>
+                        <code>SELECT :</code> : permet de sélectionner la liste des champs que je souhaite afficher dans
+                        le résultat de ma requête.
+                    </li>
+
+                    <li>
+                        <code>FROM</code> : J'annonce dans quelle table je cherche l'info.
+                    </li>
+
+                    <li>
+                        <code>WHERE</code> : Condition de jointure pour assurer le croisement des données
+                    </li>
+
+                    <li>
+                        <code>AND </code> & <code>OR</code> : Autres conditions éventuelles.
+                    </li>
+                </ul>
+                <h3 class="text-center">c) Exemples</h3>
+                <ul>
+                    <li>Dans la BDD bibliothèque, on va afficher les dates auxquelle Guillaume s'est rendu à la
+                        bibliothèque pour emprunter ou rendre des livres, on a besoin de 3 colonnes : prénom,
+                        date_sortie et date_rendu
+                        <code>
+                            SELECT abonne.prenom, emprunt.date_sortie, emprunt.date_rendu FROM abonne, emprunt WHERE abonne.id_abonne=emprunt.id_abonne AND abonne.prenom='guillaume';
+                        </code>
+                    </li>
+
+                    <li>La même requête avec des préfixes :
+                        <code>
+                            SELECT a.prenom, e.date_sortie, e.date_rendu FROM abonne a, emprunt e WHERE a.id_abonne=e.id_abonne AND a.prenom="Guillaume";
+                        </code>
+                    </li>
+
+                    <li>Exo 1 => Trouver qui à emprunter <em>Une vie</em> en 2014 :
+
+                        <code>
+
+                            SELECT a.prenom FROM abonne a, emprunt e , livre l WHERE l.id_livre=e.id_livre AND e.id_abonne=a.id_abonne AND l.titre = 'Une Vie' AND e.date_sortie LIKE '2014%';
+
+
+                        </code> la même chose en requête imbriquée :
+                        <code>SELECT prenom FROM abonne WHERE id_abonne IN (SELECT id_abonne FROM emprunt WHERE date_sortie LIKE '2014%' AND id_livre IN (SELECT id_livre FROM livre WHERE titre='Une vie'));</code>
+                    </li>
+
+                    <li>Exo 2 => Afficher le nombre de livre emprunter par chaque abonné :
+                        <code>
+SELECT a.prenom, COUNT(e.id_livre) AS nbr_livre_emprunter FROM abonne a, emprunt e WHERE a.id_abonne=e.id_abonne GROUP BY e.id_abonne;                        </code>
+                    </li>
+
+                    <li> Exo 3 =>Qui à emprunté quoi et quand ? (Indice : qui = prénom, quoi = titre, quand =
+                        date_sortie)
+                        <code>
+                            SELECT l.titre, a.prenom, e.date_sortie FROM livre l, abonne a, emprunt e WHERE l.id_livre=e.id_livre AND a.id_abonne= e.id_abonne ORDER BY ASC;
+                        </code>
+                    </li>
+                    <li>Exo 4 => Ajouter un abonné qui s'appelle Alex
+                        <code>
+INSERT INTO abonne (id_abonne, prenom) VALUES (NULL, "Alex");
+                        </code>
+                    </li>
+                    <li> Exo 5 => Afficher le prénom des abonnés avec l'id des livres empruntés :
+
+                        <code>
+SELECT a.prenom, e.id_livre FROM abonne a, emprunt e WHERE a.id_abonne=e.id_abonne ORDER BY prenom;
+                        </code>
+                    </li>
+                </ul>
+            </div>
+
+        </section>
+
+    </main>
+
+
+
+
+
+
+    <!-- fin du code + js -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

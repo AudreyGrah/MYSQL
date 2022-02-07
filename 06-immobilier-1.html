@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="fr">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    <title>Cours SQL - imobilier pt 1</title>
+</head>
+
+<body>
+    <main class="container">
+        <h1>La BDD immobilier </h1>
+        <section class="row">
+            <h2 class="text-center">1- Création de la BDD</h2>
+            <ul>
+                <li>Création de la BDD immobilier : <code>CREATE DATABASE immobilier CHARACTER SET 'uft8';</code> </li>
+               
+                <li>On pense bine à choisir la bdd que l'on veut utiliser en faissant <code>USE plus nom du domaine </code></li>
+              
+                <li>Création de la table agence : <code>CREATE TABLE IF NOT EXISTS agence (idAgence int(6) NOT NULL AUTO_INCREMENT, nom varchar(100) NOT NULL, adresse varchar(100) NOT NULL, PRIMARY KEY (idAgence)) ENGINE=InnoDB DEFAULT CHARSET=latin1;</code></li>
+              
+                <li>Création de la table demande : <code>CREATE TABLE IF NOT EXISTS demande (idDemande int(5) NOT NULL AUTO_INCREMENT, idPersonne int(3) NOT NULL, genre varchar(100) NOT NULL, ville varchar(100) NOT NULL, budget int(7) NOT NULL, superficie int(5) NOT NULL, categorie varchar(100) NOT NULL, PRIMARY KEY (idDemande), KEY idPersonne (idPersonne)) ENGINE=InnoDB DEFAULT CHARSET=latin1;</code></li>
+               
+                <li>Creation  de la table de logment <code>CREATE TABLE IF NOT EXISTS logement (idLogement int(4) NOT NULL AUTO_INCREMENT, genre varchar(100) NOT NULL, ville varchar(100) NOT NULL, prix int(7) NOT NULL, superficie int(5) NOT NULL, categorie varchar(100) NOT NULL, PRIMARY KEY (idLogement)) ENGINE=InnoDB DEFAULT CHARSET=latin1;</code></li>
+               
+                <li>Creation de la table logement agence <code>CREATE TABLE IF NOT EXISTS logement_agence (idLogementAgence int(5) NOT NULL AUTO_INCREMENT, idAgence int(6) NOT NULL, idLogement int(4) NOT NULL, frais int(7) NOT NULL, PRIMARY KEY (idLogementAgence), KEY idAgence (idAgence), KEY idLogement (idLogement)) ENGINE=InnoDB DEFAULT CHARSET=latin1 ;</code></li>
+               
+                <li>Création de la table logement personne <code>CREATE TABLE IF NOT EXISTS logement_personne (idLogementPersonne int(5) NOT NULL AUTO_INCREMENT, idPersonne int(3) NOT NULL, idLogement int(4) NOT NULL, PRIMARY KEY (idLogementPersonne), UNIQUE KEY idLogement (idLogement), KEY idPersonne (idPersonne)) ENGINE=InnoDB DEFAULT CHARSET=latin1;</code></li>
+                
+                <li>Création de la table perosnne  <code>CREATE TABLE IF NOT EXISTS personne (idPersonne int(3) NOT NULL AUTO_INCREMENT, prenom varchar(100) NOT NULL, PRIMARY KEY (idPersonne)) ENGINE=InnoDB DEFAULT CHARSET=latin1;</code></li>
+
+                <li>Création de cléfs étrangère (FOREIGN KEY = KEY ) : <code>ALTER TABLE logement_agence ADD CONSTRAINT logement_agence_ibfk_2 FOREIGN KEY (idLogement) REFERENCES logement (idLogement), ADD CONSTRAINT logement_agence_ibfk_1 FOREIGN KEY (idAgence) REFERENCES agence (idAgence);</code></li>
+                <li>incertion des donner dans la table agence <code>INSERT INTO agence (idAgence, nom, adresse) VALUES
+                    (257400, 'logic-immo', 'rue logic'),
+                    (383505, 'century21', 'rue century'),
+                    (504585, 'laforet', 'rue laforet'),
+                    (544688, 'fnaim', 'rue fnaim'),
+                    (608870, 'orpi', 'rue orpi'),
+                    (654178, 'foncia', 'rue foncia'),
+                    (654658, 'guy-hoquet', 'rue guy-hoquet'),
+                    (654893, 'seloger', 'rue seloger'),
+                    (692702, 'bouygues immobilier', 'rue bouygues');</code></li>
+            </ul>
+            <div class="col-12 col-md-16">
+                <h2 class="text-center">2- Question sur la BDD</h2>
+                <ol>
+                    <li>Afficher le nom de agence <code>SELECT nom FROM agence;</code></li>
+                    <li>Afficher l'id de l'agence 'Orpi' <code>SELECT idagence FROM agence WHERE nom='Orpi'</code></li>
+                  
+                    <li>Afficher le premier enregistrement de la table logement <code>SELECT * FROM logement ORDER BY idLogement ASC LIMIT 0,1;</code></li>
+                 
+                    <li>Afficher compter le nombre de logement<code>SELECT COUNT(*) FROM logement ;</code></li>
+                   
+                    <li>Afficher les logement a vendre qui coute -150 000 € dans l'ordre croissant des prix<code>SELECT * FROM logement WHERE prix < 150000 AND categorie='vente' ORDER BY prix ASC;</code></li>
+                  
+                    <li>Compter le nombre de logmentr disponnible en location et donner à la colonne à la colonne alis 'logment_location'<code>SELECT COUNT(*) AS 'logement_location' FROM logement WHERE categorie='location';</code></li>
+                   
+                    <li>Afficher les villes différentes recherchées par les personne demandeuse d'un logement<code>SELECT ville FROM demande GROUP BY ville;</code></li>
+                   
+                    <li>Afficher le nombre de biens a vendre par ville<code>SELECT COUNT(idLogement) AS 'nombre de logement', ville FROM logement WHERE ville IN (SELECT DISTINCT(ville) FROM logement) AND categorie='vente' GROUP BY ville;</code></li>
+                  
+                    <li>Afficher l'id ds logement destinés à l location <code>SELECT idLogement FROM logement WHERE categorie LIKE 'location%'</code></li>
+                  
+                    <li>Afficher l'id des logementdont la superficieest entre 20m et 30m <code>SELECT idlogement  FROM logement WHERE superficie BETWEEN '20' AND '30';</code></li>
+                    <li>Quel est le prix vendeur (hors comission) du logement le moins cher à vendre ? <code>SELECT min(prix), categorie FROM logement WHERE categorie='vente';</code></li>
+
+                    <li>Dans qu'elle ville ce trouve les maison a vendre</li>
+
+                    <li>l'agence Opri souhaite dimminuer les frais qu'elle apllique sur les logement ayantid '5246.</li>
+                    <li> passez de ce logment de 800 a 730 'laforet'</li>
+                    <li>Afficher le nombre de proprietaire de paris avec AS (aliase) 'proprio parisien'</li>
+                    <li>Afficher le prenom du vendeur pour le logement ayant l'id 5770</li>
+                    <li>Afficher le prenom de gens voulosn avoir un logement sur lyon</li>
+                    <li>Afficher les prenom des personne souhaiton acceder un logement en location a paris </li>
+                    <li>Afficher les prenom des personne souhaitoon acheter un logement de la plus grande a la plus petite superficie</li>
+                    <li>Qu'elle son les prix finaux proposer par les agences pour la maison a la vente ayant la reference '5091'? indice prix plus frais d'agence </li>
+                </ol>
+            </div>
+
+
+        </section><!-- fin de la rangée -->
+        
+    </main>
+
+
+
+
+
+
+    <!-- fin du code + js -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
